@@ -1,10 +1,10 @@
-class DictionaryFlattener:
+class JSONReader:
 
-    # DictionaryFlattener constructor
+    # JSONReader constructor
     # Params:
-    #   +array_of_dictionaries+ - Array to be flattened
-    def __init__(self, array_of_dictionaries):
-        self.array_of_dictionaries = array_of_dictionaries
+    #   +json+ - Array to be flattened
+    def __init__(self, json):
+        self.json = json
 
     # Method responsible for flattening the dictionaries
     # Observations:
