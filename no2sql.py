@@ -2,7 +2,12 @@ from pyspark import SparkContext, SQLContext
 
 
 class No2SQL:
-    """Transforms a csv like to a relational schema"""
+    """Transforms a csv like to a relational schema.
+    This class is an implementation using Apache Spark of the paper:
+    Michael DiScala and Daniel J. Abadi. 2016.\
+    Automatic Generation of Normalized Relational Schemas from Nested Key-Value Data
+    """
+
     def __init__(self, headers, values, spark_context=None):
         """Initialize a new No2SQL object.
 
