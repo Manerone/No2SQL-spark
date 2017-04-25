@@ -1,4 +1,7 @@
 from pyspark import SparkContext, SQLContext
+import sys
+sys.path.append('./no2sql')
+from dependency_checker import DependencyChecker
 
 
 class No2SQL:
@@ -8,7 +11,7 @@ class No2SQL:
     Automatic Generation of Normalized Relational Schemas from Nested Key-Value Data
     """
 
-    def __init__(self, headers, values, spark_context=None):
+    def __init__(self, headers, values, spark_context=None, soft_alfa=0.99):
         """Initialize a new No2SQL object.
 
         Arguments:
@@ -17,11 +20,12 @@ class No2SQL:
         """
         self.headers = headers
         self.values = values
-        self.context = self.build_spark_context(spark_context)
+        self.soft_alfa = soft_alfa
+        self.context = self._build_spark_context(spark_context)
         self.sql_context = SQLContext(self.context)
         self.data_frame = self.sql_context.createDataFrame(values, headers)
 
-    def build_spark_context(self, context):
+    def _build_spark_context(self, context):
         """Creates a new SparkContext if not given."""
         if context is None:
             return SparkContext()
@@ -30,3 +34,10 @@ class No2SQL:
 
     def start(self):
         pass
+
+    def _possible_soft_func_dependencies(self):
+        sfds = []
+        for i in xrange(len(self.headers)):
+            for j in xrange(i+1, len(self.headers)):
+                sfds.append((self.headers[i], self.headers[j]))
+        return sfds
