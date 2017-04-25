@@ -33,11 +33,20 @@ class No2SQL:
             return context
 
     def start(self):
-        pass
+        sfd = self._find_soft_func_dependencies
 
     def _possible_soft_func_dependencies(self):
         sfds = []
         for i in xrange(len(self.headers)):
             for j in xrange(i+1, len(self.headers)):
                 sfds.append((self.headers[i], self.headers[j]))
-        return sfds
+        return self.context.parallelize(sfds)
+
+    def _find_soft_func_dependencies(self):
+        self._possible_soft_func_dependencies.map(
+            lambda x: self._is_soft_func_dependency(x[0], x[1])
+        )
+
+    def _is_soft_func_dependency(self, A, B):
+        if DependencyChecker(self.data_frame, A, B, self.soft_alfa).check()
+            return (A,B)
