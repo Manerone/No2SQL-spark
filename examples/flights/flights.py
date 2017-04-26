@@ -7,7 +7,7 @@ from pyspark import SparkContext, SQLContext
 
 sc = SparkContext()
 sql_context = SQLContext(sc)
-print 'Reading file'
+print 'Reading file', current_path + '/flights.csv.gz'
 df = sql_context.read.format("com.databricks.spark.csv").options(
     header=True, inferSchema=True
     ).load(current_path + '/flights.csv.gz')

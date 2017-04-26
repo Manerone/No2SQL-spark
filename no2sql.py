@@ -1,7 +1,3 @@
-import os
-current_path = os.path.dirname(os.path.realpath(__file__))
-import sys
-sys.path.append(current_path + '/no2sql')
 from dependency_checker import DependencyChecker
 
 
@@ -22,11 +18,19 @@ class No2SQL:
         """
         self.soft_alfa = soft_alfa
         self.context = spark_context
+        self.context.addPyFile('dependency_checker.py')
         self.data_frame = data_frame
+        self.columns = self._split_by_columns(self.data_frame)
 
     def start(self):
-        sfd = self._find_soft_func_dependencies
-        print sfd
+        sfd = self._find_soft_func_dependencies()
+        sfd = sfd.filter(lambda x: x is not None)
+
+    def _split_by_columns(self, df):
+        dict = {}
+        for col in df.columns:
+            dict[col] = df.select(col).rdd.map(lambda x: x[0]).collect()
+        return dict
 
     def _possible_soft_func_dependencies(self):
         sfds = []
@@ -42,5 +46,9 @@ class No2SQL:
         )
 
     def _is_soft_func_dependency(self, A, B):
-        if DependencyChecker(self.data_frame, A, B, self.soft_alfa).check():
+        sfdChecker = DependencyChecker(
+            self.columns[A], self.columns[B], self.soft_alfa
+        )
+        if sfdChecker.check():
             return (A, B)
+        return None

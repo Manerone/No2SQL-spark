@@ -1,4 +1,4 @@
-class DependencyChecker(object):
+class DependencyChecker:
     """Given a dataFrame with two columns A and B,
     checks if A -> B is a Soft Functional Dependency based on given alfa param.
 
@@ -7,16 +7,14 @@ class DependencyChecker(object):
     from Nested Key-Value Data
 
     Arguments:
-    data_frame -- Spark dataframe with the data
-    A -- Name of the left-hand side column in the SFD
-    B -- Name of the right-hand side column in the SFD
+    A -- left-hand side column in the SFD, with the values
+    B -- right-hand side column in the SFD, with the values
     soft_alfa -- 'Softness' of the functional dependencies (default 0.99)
     """
-    def __init__(self, data_frame, A, B, soft_alfa=0.99):
+    def __init__(self, A, B, soft_alfa=0.99):
         self.A = A
         self.B = B
         self.soft_alfa = soft_alfa
-        self.data_frame = data_frame
 
     def check(self):
         """Return true if A -> B is a Soft Functional Dependency."""
@@ -31,12 +29,12 @@ class DependencyChecker(object):
         return unique / float(unique_pairs)
 
     def density(self, column):
-        non_null = self.data_frame.filter('column is not null').count()
-        total = self.data_frame.select(column).count()
+        non_null = len(filter(lambda x: x is not None, column))
+        total = len(column)
         return non_null/float(total)
 
-    def unique_count(self, column_name):
-        return self.data_frame.select(column_name).distinct().count()
+    def unique_count(self, values):
+        return len(set(values))
 
     def unique_pairs_count(self, A, B):
-        return self.data_frame.select(A, B).distinct().count()
+        return len(set(zip(A, B)))
